@@ -188,3 +188,7 @@ button:hover { background: var(--hijau-hover); }
 .badge-menunggu { background: #fff3cd; color: #8a6d00; }
 .badge-terverifikasi { background: #d4edda; color: #1f5f4a; }
 .badge-ditolak { background: #fdecea; color: #b42318; }
+
+.tambah-kategori { margin-bottom: 20px; }
+.tambah-kategori input { flex: 1; }
+.tambah-kategori button { margin: 0; width: auto; padding: 8px 20px; }
