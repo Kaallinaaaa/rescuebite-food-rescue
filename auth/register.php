@@ -5,16 +5,21 @@ require_once "../config/database.php";
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nama     = trim($_POST["nama"]);
-    $email    = trim($_POST["email"]);
-    $password = $_POST["password"];
-    $role     = $_POST["role"];
-    $no_hp    = trim($_POST["no_hp"]);
+    $nama      = trim($_POST["nama"]);
+    $email     = trim($_POST["email"]);
+    $password  = $_POST["password"];
+    $role      = $_POST["role"];
+    $no_hp     = trim($_POST["no_hp"]);
+    $nama_toko = trim($_POST["nama_toko"] ?? "");
+    $alamat    = trim($_POST["alamat"] ?? "");
+    $jam_tutup = $_POST["jam_tutup"] ?? "";
 
     if ($nama === "" || $email === "" || $password === "") {
         $error = "Semua kolom wajib diisi.";
     } elseif (!in_array($role, ["pembeli", "mitra"])) {
         $error = "Peran tidak valid.";
+    } elseif ($role === "mitra" && ($nama_toko === "" || $alamat === "")) {
+        $error = "Nama toko dan alamat wajib diisi untuk mitra.";
     } elseif ($no_hp !== "" && !preg_match('/^\+?[0-9]{8,15}$/', $no_hp)) {
         $error = "Format no. HP tidak valid.";
     } else {
@@ -25,10 +30,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $error = "Email sudah terdaftar.";
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT);
+
+            $pdo->beginTransaction();
             $stmt = $pdo->prepare(
                 "INSERT INTO users (nama, email, password, role, no_hp) VALUES (?, ?, ?, ?, ?)"
             );
             $stmt->execute([$nama, $email, $hash, $role, $no_hp === "" ? null : $no_hp]);
+            $user_id = $pdo->lastInsertId();
+
+            if ($role === "mitra") {
+                $stmt2 = $pdo->prepare(
+                    "INSERT INTO partners (user_id, nama_toko, alamat, jam_tutup) VALUES (?, ?, ?, ?)"
+                );
+                $stmt2->execute([$user_id, $nama_toko, $alamat, $jam_tutup === "" ? null : $jam_tutup]);
+            }
+            $pdo->commit();
+
             header("Location: login.php");
             exit;
         }
@@ -66,10 +83,29 @@ require_once "../includes/header.php";
             <option value="mitra">Mitra (resto/toko)</option>
         </select>
 
+        <div id="data-toko" style="display:none">
+            <label for="nama_toko">Nama toko</label>
+            <input type="text" id="nama_toko" name="nama_toko" placeholder="Contoh: Roti Bahagia">
+
+            <label for="alamat">Alamat toko</label>
+            <input type="text" id="alamat" name="alamat" placeholder="Jl. Contoh No. 1, Yogyakarta">
+
+            <label for="jam_tutup">Jam tutup</label>
+            <input type="time" id="jam_tutup" name="jam_tutup">
+        </div>
+
         <button type="submit">Buat Akun</button>
     </form>
 
     <p class="auth-foot">Sudah punya akun? <a href="login.php">Masuk</a></p>
 </div>
+
+<script>
+const role = document.getElementById("role");
+const dataToko = document.getElementById("data-toko");
+role.addEventListener("change", () => {
+    dataToko.style.display = role.value === "mitra" ? "block" : "none";
+});
+</script>
 
 <?php require_once "../includes/footer.php"; ?>
