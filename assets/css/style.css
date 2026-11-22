@@ -17,9 +17,10 @@ body {
   color: var(--teks);
   background: linear-gradient(160deg, var(--krem) 0%, #e3f1ea 100%);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 24px 16px;
+  justify-content: center;
+  padding: 80px 16px 24px;
 }
 
 .auth-wrap {
@@ -108,3 +109,46 @@ button:hover { background: var(--hijau-hover); }
 .auth-foot { margin-top: 20px; font-size: 0.9rem; color: var(--abu); }
 .auth-foot a { color: var(--hijau-tua); font-weight: 600; text-decoration: none; }
 .auth-foot a:hover { text-decoration: underline; }
+
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  z-index: 10;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--hijau-tua);
+}
+
+.nav-brand img { width: 36px; height: 36px; border-radius: 10px; }
+
+.nav-links { display: flex; align-items: center; gap: 16px; }
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--teks);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.nav-links a:hover { color: var(--hijau-tua); }
+
+.btn-nav {
+  background: var(--hijau-tua);
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+
+.btn-nav:hover { background: var(--hijau-hover); }

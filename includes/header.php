@@ -9,3 +9,4 @@
     <link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/style.css">
 </head>
 <body>
+<?php require_once __DIR__ . "/navbar.php"; ?>
