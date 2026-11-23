@@ -1,0 +1,49 @@
+.kartu-pesanan {
+  background: white; border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: left;
+}
+.kp-atas { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.kp-atas small { color: var(--abu); }
+.kp-total { font-weight: 700; color: var(--hijau-tua); white-space: nowrap; }
+.kp-info { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0; font-size: 0.85rem; color: var(--abu); }
+
+.kode-box {
+  background: var(--krem); border: 2px dashed var(--mustard);
+  border-radius: 12px; text-align: center; padding: 10px; margin: 10px 0;
+}
+.kode-box small { color: var(--abu); }
+.kode { font-size: 1.8rem; font-weight: 700; letter-spacing: 6px; color: var(--teks); }
+
+.kp-aksi { display: flex; gap: 12px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.btn-aksi {
+  display: inline-block; background: var(--hijau-tua); color: white; padding: 8px 18px;
+  border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+}
+.btn-aksi:hover { background: var(--hijau-hover); }
+.sudah { color: var(--hijau-tua); font-weight: 600; font-size: 0.9rem; }
+.kosong { text-align: center; padding: 30px 0; color: var(--abu); }
+.catatan-sim { color: var(--abu); font-size: 0.8rem; margin: 6px 0 0; }
+.sukses-box { background: #d4edda; border-radius: 16px; padding: 18px; text-align: center; margin-bottom: 14px; color: #1f5f4a; }
+.sukses-box small { color: #3b6b5a; }
+.total-bayar { margin: 14px 0 0; font-size: 1.05rem; }
+
+.bintang { display: flex; flex-direction: row-reverse; justify-content: flex-end; margin-bottom: 8px; }
+.bintang input { display: none; }
+.bintang label { font-size: 2rem; color: var(--garis); cursor: pointer; margin: 0 2px; line-height: 1; }
+.bintang input:checked ~ label,
+.bintang label:hover,
+.bintang label:hover ~ label { color: var(--mustard); }
+
+textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--garis); border-radius: 12px;
+  font-family: inherit; font-size: 0.95rem; resize: vertical;
+}
+textarea:focus { outline: 2px solid var(--hijau-tua); border-color: transparent; }
+
+.dampak-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 18px 0; }
+.dampak-kartu { background: white; border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.dampak-kartu strong { display: block; font-size: 1.8rem; color: var(--hijau-tua); }
+.dampak-kartu span { color: var(--abu); font-size: 0.85rem; }
+.judul-komunitas { margin-top: 32px; font-size: 1.1rem; color: var(--hijau-tua); }
+.dampak-komunitas { display: flex; flex-wrap: wrap; gap: 8px 24px; background: var(--krem); border-radius: 12px; padding: 14px 18px; color: var(--abu); text-align: left; }
+.dampak-komunitas strong { color: var(--teks); }
