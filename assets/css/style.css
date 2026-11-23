@@ -392,3 +392,54 @@ body.landing {
   .stat-bar { grid-template-columns: 1fr 1fr 1fr; }
   .stat-teks { grid-column: 1 / -1; }
 }
+
+.alert-ok {
+  background: #d4edda;
+  color: #1f5f4a;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.sub-judul {
+  font-size: 1.2rem;
+  color: var(--hijau-tua);
+  margin: 28px 0 12px;
+  text-align: left;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-bar button {
+  margin: 0;
+  width: auto;
+  padding: 12px 24px;
+}
+
+.foto-wrap { position: relative; }
+
+.label-soldout {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: #b42318;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.kartu-makanan.sold-out img {
+  filter: grayscale(80%);
+  opacity: 0.75;
+}
+
+@media (max-width: 700px) {
+  .filter-bar { grid-template-columns: 1fr; }
+}

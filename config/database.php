@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
 $host = "localhost";
 $db   = "rescuebite";
 $user = "root";

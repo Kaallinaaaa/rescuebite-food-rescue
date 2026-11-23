@@ -73,6 +73,43 @@ CREATE TABLE `users` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `listings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `nama_makanan` varchar(120) NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `foto` varchar(255) NOT NULL,
+  `harga_asli` int(11) NOT NULL,
+  `harga_diskon` int(11) NOT NULL,
+  `stok` int(11) NOT NULL DEFAULT 1,
+  `batas_jam_ambil` datetime NOT NULL,
+  `status` enum('aktif','diblokir') NOT NULL DEFAULT 'aktif',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `partner_id` (`partner_id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `listings_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `partners` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `listings_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `listing_id` int(11) NOT NULL,
+  `jumlah` int(11) NOT NULL DEFAULT 1,
+  `total_harga` int(11) NOT NULL,
+  `kode_pickup` varchar(20) NOT NULL,
+  `status_pesanan` enum('menunggu_pickup','selesai','dibatalkan') NOT NULL DEFAULT 'menunggu_pickup',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `kode_pickup` (`kode_pickup`),
+  KEY `user_id` (`user_id`),
+  KEY `listing_id` (`listing_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -133,3 +170,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

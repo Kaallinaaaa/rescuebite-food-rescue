@@ -15,6 +15,7 @@
 
         <?php elseif ($_SESSION["role"] === "mitra"): ?>
             <a href="/rescuebite-food-rescue/mitra/index.php">Dashboard</a>
+            <a href="/rescuebite-food-rescue/mitra/listing.php">Kelola Listing</a>
             <a href="/rescuebite-food-rescue/profil.php">Profil</a>
             <a href="/rescuebite-food-rescue/auth/logout.php" class="btn-nav">Keluar</a>
 
