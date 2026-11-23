@@ -25,7 +25,6 @@ function ambil_order($pdo, $order_id, $user_id) {
 $order_id = (int) ($_GET["order_id"] ?? $_POST["order_id"] ?? 0);
 $o = ambil_order($pdo, $order_id, $_SESSION["user_id"]);
 
-// Pesanan harus milik pembeli ini dan masih aktif (menunggu pickup)
 if (!$o || $o["status_pesanan"] !== "menunggu_pickup") {
     header("Location: /rescuebite-food-rescue/pembeli/riwayat.php");
     exit;
@@ -34,7 +33,6 @@ if (!$o || $o["status_pesanan"] !== "menunggu_pickup") {
 $metode_tersedia = ["QRIS", "Transfer Bank", "GoPay", "OVO", "DANA"];
 $error = "";
 
-// ---------- PROSES PEMBAYARAN (SIMULASI) ----------
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $o["status_bayar"] !== "lunas") {
     $metode = $_POST["metode"] ?? "";
 
