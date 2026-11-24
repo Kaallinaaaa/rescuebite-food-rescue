@@ -16,7 +16,61 @@ try {
 } catch (PDOException $e) {
     $jml_porsi = 0;
 }
+// ---------- Grafik 6 bulan: mitra, pembeli, porsi ----------
+$nama_bulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+$label_bulan = [];
+for ($i = 5; $i >= 0; $i--) {
+    $ts = strtotime("first day of -$i month");
+    $label_bulan[date("Y-m", $ts)] = $nama_bulan[(int) date("n", $ts) - 1];
+}
 
+function data_bulanan(PDO $pdo, array $bulan, string $select, string $dari, string $tgl): array {
+    $hasil = array_fill_keys(array_keys($bulan), 0);
+    try {
+        $rows = $pdo->query(
+            "SELECT DATE_FORMAT($tgl, '%Y-%m') AS bln, $select AS total $dari
+             AND $tgl >= DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-01'), INTERVAL 5 MONTH)
+             GROUP BY bln"
+        )->fetchAll();
+        foreach ($rows as $r) {
+            if (isset($hasil[$r["bln"]])) $hasil[$r["bln"]] = (int) $r["total"];
+        }
+    } catch (PDOException $e) {
+        // kolom belum sesuai: grafik tampil kosong
+    }
+    return $hasil;
+}
+
+function hitung_tren(PDO $pdo, string $select, string $dari, string $tgl): array {
+    try {
+        $now  = (int) $pdo->query("SELECT $select $dari AND $tgl >= DATE_SUB(NOW(), INTERVAL 30 DAY)")->fetchColumn();
+        $lalu = (int) $pdo->query("SELECT $select $dari AND $tgl >= DATE_SUB(NOW(), INTERVAL 60 DAY)
+                                   AND $tgl < DATE_SUB(NOW(), INTERVAL 30 DAY)")->fetchColumn();
+    } catch (PDOException $e) {
+        return [0, null];
+    }
+    return [$now, $lalu > 0 ? round(($now - $lalu) / $lalu * 100) : null];
+}
+
+$q_mitra   = ["COUNT(*)", "FROM partners p JOIN users u ON p.user_id = u.id WHERE p.status_verifikasi = 'terverifikasi'", "u.created_at"];
+$q_pembeli = ["COUNT(*)", "FROM users WHERE role = 'pembeli'", "created_at"];
+$q_porsi   = ["COALESCE(SUM(jumlah),0)", "FROM orders WHERE status_pesanan = 'selesai'", "created_at"];
+
+$g_mitra   = data_bulanan($pdo, $label_bulan, ...$q_mitra);
+$g_pembeli = data_bulanan($pdo, $label_bulan, ...$q_pembeli);
+$g_porsi   = data_bulanan($pdo, $label_bulan, ...$q_porsi);
+$maks = max(1, max($g_mitra), max($g_pembeli), max($g_porsi));
+
+[$n_mitra, $t_mitra]     = hitung_tren($pdo, ...$q_mitra);
+[$n_pembeli, $t_pembeli] = hitung_tren($pdo, ...$q_pembeli);
+[$n_porsi, $t_porsi]     = hitung_tren($pdo, ...$q_porsi);
+
+function ikon_tren(int $persen): string {
+    $path = $persen >= 0
+        ? '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'
+        : '<path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/>';
+    return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' . $path . '</svg>';
+}
 // Ambil kategori untuk dropdown filter
 $categories = $pdo->query("SELECT * FROM categories ORDER BY nama")->fetchAll();
 
@@ -68,30 +122,105 @@ $body_class = "landing";
 require_once "includes/header.php";
 ?>
 
-<section class="hero">
-    <h1>Makan hemat, bumi selamat.</h1>
-    <p class="hero-sub">
-        Rescuebite menyelamatkan makanan layak dari resto dan toko roti,
-        lalu menjualnya dengan harga miring untuk mahasiswa dan anak rantau.
-    </p>
-    <?php if (isset($_SESSION["user_id"])): ?>
-        <p>Halo, <strong><?= htmlspecialchars($_SESSION["nama"]) ?></strong>! Pilih makanan surplus di bawah sebelum kehabisan.</p>
-    <?php else: ?>
+<section class="hero-split">
+    <div class="hero-teks">
+        <p class="eyebrow">
+            <?php if (isset($_SESSION["user_id"])): ?>
+                Halo, <?= htmlspecialchars($_SESSION["nama"]) ?>
+            <?php else: ?>
+                Surplus food untuk anak rantau
+            <?php endif; ?>
+        </p>
+
+        <h1>Makanan enak layak <span class="warna">kesempatan kedua.</span></h1>
+
+        <p class="hero-sub">
+            Temukan makanan surplus yang lezat di dekatmu dengan harga yang bikin senang.
+            Dari resto dan toko roti langsung ke piringmu, sebelum jadi sampah.
+        </p>
+
         <div class="hero-aksi">
-            <a href="auth/register.php" class="btn-solid">Mulai Sekarang</a>
-            <a href="auth/login.php" class="btn-outline">Masuk</a>
+            <?php if (isset($_SESSION["user_id"])): ?>
+                <a href="#katalog" class="btn-solid">Lihat Katalog</a>
+            <?php else: ?>
+                <a href="auth/register.php" class="btn-solid">Mulai Sekarang</a>
+                <a href="auth/login.php" class="btn-outline">Masuk</a>
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
-    <img src="assets/img/hero.jpg" alt="Makanan surplus Rescuebite" class="hero-img">
+    </div>
+
+    <div class="hero-foto">
+        <img src="assets/img/hero.jpg" alt="Makanan surplus Rescuebite">
+    </div>
 </section>
 
-<section class="stat-bar">
-    <p class="stat-teks">Selamatkan makanan, hemat uang makan, dan kurangi sampah makanan bersama-sama.</p>
-    <div class="stat-item"><strong><?= (int) $jml_mitra ?></strong><span>Mitra terverifikasi</span></div>
-    <div class="stat-item"><strong><?= (int) $jml_pembeli ?></strong><span>Pembeli terdaftar</span></div>
-    <div class="stat-item"><strong><?= (int) $jml_porsi ?></strong><span>Porsi terselamatkan</span></div>
+
+<section class="stat-kartu">
+    <div class="stat-box">
+        <span class="stat-label">Mitra terverifikasi</span>
+        <strong><?= (int) $jml_mitra ?></strong>
+        <small>toko dan resto yang bergabung</small>
+    </div>
+    <div class="stat-box">
+        <span class="stat-label">Pembeli terdaftar</span>
+        <strong><?= (int) $jml_pembeli ?></strong>
+        <small>mahasiswa dan anak rantau</small>
+    </div>
+    <div class="stat-box stat-utama">
+        <span class="stat-label">Porsi terselamatkan</span>
+        <strong><?= (int) $jml_porsi ?></strong>
+        <small>makanan yang tidak jadi sampah</small>
+    </div>
 </section>
 
+<section class="dash">
+    <div class="dash-kartu dash-grafik">
+        <div class="dash-kepala">
+            <h3>Pertumbuhan Rescuebite</h3>
+            <div class="legenda">
+                <span><i class="dot dot-mustard"></i>Mitra</span>
+                <span><i class="dot dot-garis"></i>Pembeli</span>
+                <span><i class="dot dot-hijau"></i>Porsi terselamatkan</span>
+            </div>
+        </div>
+
+        <div class="bars">
+            <?php foreach ($label_bulan as $key => $nama): ?>
+                <div class="bar-grup">
+                    <div class="bar-area">
+                        <div class="bar bar-mustard" style="height: <?= round($g_mitra[$key] / $maks * 100) ?>%" title="<?= $g_mitra[$key] ?> mitra"></div>
+                        <div class="bar bar-garis" style="height: <?= round($g_pembeli[$key] / $maks * 100) ?>%" title="<?= $g_pembeli[$key] ?> pembeli"></div>
+                        <div class="bar bar-hijau" style="height: <?= round($g_porsi[$key] / $maks * 100) ?>%" title="<?= $g_porsi[$key] ?> porsi"></div>
+                    </div>
+                    <span class="bar-label"><?= $nama ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="dash-bawah">
+        <?php
+        $kartu = [
+            ["Mitra baru",            $n_mitra,   $t_mitra],
+            ["Pembeli baru",          $n_pembeli, $t_pembeli],
+            ["Porsi terselamatkan",   $n_porsi,   $t_porsi],
+        ];
+        foreach ($kartu as [$judul, $nilai, $tren]): ?>
+            <div class="dash-kartu dash-mini">
+                <span class="stat-label"><?= $judul ?></span>
+                <strong><?= $nilai ?></strong>
+                <?php if ($tren !== null): ?>
+                    <p class="tren <?= $tren >= 0 ? 'naik' : 'turun' ?>">
+                        <?= ikon_tren($tren) ?>
+                        <b><?= abs($tren) ?>%</b> vs 30 hari sebelumnya
+                    </p>
+                <?php else: ?>
+                    <p class="tren">30 hari terakhir</p>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
 <section class="blok" id="katalog">
     <h2 class="judul-blok">Katalog Makanan Surplus</h2>
 
@@ -209,7 +338,7 @@ require_once "includes/header.php";
     </div>
 </section>
 
-<section class="cta" style="background-image: linear-gradient(rgba(47,138,74,.85), rgba(47,138,74,.85)), url('assets/img/mahasiswa.jpg');">
+<section class="cta" style="background-image: linear-gradient(rgba(47,138,74,.85), rgba(31,95,74,.88)), url('assets/img/mahasiswa.jpg');">
     <h2>Yuk, mulai selamatkan makanan</h2>
     <p>Mendukung SDG 12: Konsumsi dan Produksi yang Bertanggung Jawab.</p>
     <?php if (!isset($_SESSION["user_id"])): ?>

@@ -85,89 +85,133 @@ $stmt = $pdo->prepare(
 $stmt->execute([$mitra["id"]]);
 $riwayat_penjualan = $stmt->fetchAll();
 
+$terverifikasi = $mitra["status_verifikasi"] === "terverifikasi";
+
 require_once "../includes/header.php";
 ?>
+<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/mitra-dashboard.css">
 
-<div class="wide-wrap">
-    <h1>Dashboard Mitra</h1>
-    <p class="auth-sub">
-        <?= htmlspecialchars($mitra["nama_toko"]) ?>
-        <span class="badge badge-<?= $mitra["status_verifikasi"] ?>"><?= $mitra["status_verifikasi"] ?></span>
-    </p>
+<div class="mt-halaman">
 
-    <?php if ($mitra["status_verifikasi"] !== "terverifikasi"): ?>
-        <p class="alert">
-            Status toko Anda masih <strong><?= $mitra["status_verifikasi"] ?></strong>. 
+    <div class="mt-kepala">
+        <div>
+            <h1>Dashboard Mitra</h1>
+            <p class="mt-toko"><strong><?= htmlspecialchars($mitra["nama_toko"]) ?></strong></p>
+        </div>
+        <span class="mt-verif mt-verif--<?= htmlspecialchars($mitra["status_verifikasi"]) ?>">
+            <?= htmlspecialchars($mitra["status_verifikasi"]) ?>
+        </span>
+    </div>
+
+    <?php if (!$terverifikasi): ?>
+        <p class="mt-pesan mt-pesan--info">
+            Status toko Anda masih <strong><?= htmlspecialchars($mitra["status_verifikasi"]) ?></strong>.
             Anda dapat memposting makanan surplus setelah diverifikasi oleh Admin.
         </p>
     <?php endif; ?>
 
     <?php if ($error): ?>
-        <p class="alert"><?= htmlspecialchars($error) ?></p>
+        <p class="mt-pesan mt-pesan--salah" role="alert"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
     <?php if ($sukses): ?>
-        <p class="alert-ok"><?= htmlspecialchars($sukses) ?></p>
+        <p class="mt-pesan mt-pesan--ok" role="status"><?= htmlspecialchars($sukses) ?></p>
     <?php endif; ?>
 
-    <div class="menu-admin" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
-        <a href="listing.php" class="menu-card">
-            Kelola Listing Surplus
-            <span><?= (int) $jml_listing ?> makanan diposting</span>
+    <!-- Statistik -->
+    <div class="mt-stat-baris">
+        <a href="listing.php" class="mt-stat">
+            <div class="mt-stat-isi">
+                <b><?= (int) $jml_listing ?></b>
+                <span>makanan diposting</span>
+                <strong>Kelola listing surplus</strong>
+            </div>
+            <svg class="mt-stat-panah" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
         </a>
-        <div class="menu-card">
-            Pesanan Menunggu Pickup
-            <span><?= (int) $jml_masuk ?> pesanan aktif</span>
+        <div class="mt-stat <?= $jml_masuk ? 'mt-stat--sorot' : '' ?>">
+            <div class="mt-stat-isi">
+                <b><?= (int) $jml_masuk ?></b>
+                <span>pesanan aktif</span>
+                <strong>Menunggu pickup</strong>
+            </div>
         </div>
     </div>
 
-    <?php if ($mitra["status_verifikasi"] === "terverifikasi"): ?>
-        <form method="POST" class="aksi tambah-kategori">
-            <input type="text" name="kode_pickup" placeholder="Masukkan kode pickup pembeli (misal: RB-1234)" required>
-            <button type="submit" name="konfirmasi_pickup">Konfirmasi Pickup</button>
-        </form>
+    <!-- Konfirmasi pickup -->
+    <?php if ($terverifikasi): ?>
+        <section class="mt-pickup">
+            <h2>Konfirmasi pickup</h2>
+            <p>Minta pembeli menunjukkan kode pickup, lalu masukkan di sini.</p>
+            <form method="POST">
+                <input type="text" name="kode_pickup" placeholder="Contoh: RB-1234" autocomplete="off" required aria-label="Kode pickup pembeli">
+                <button type="submit" name="konfirmasi_pickup">Konfirmasi pickup</button>
+            </form>
+        </section>
     <?php endif; ?>
 
-    <h2 class="sub-judul">Pesanan Masuk</h2>
-    <?php if (!$pesanan_masuk): ?>
-        <p class="auth-sub" style="text-align:left;">Belum ada pesanan yang menunggu diambil.</p>
-    <?php else: ?>
-        <?php foreach ($pesanan_masuk as $p): ?>
-            <div class="card-mitra">
-                <div>
-                    <strong><?= htmlspecialchars($p["nama_makanan"]) ?> (<?= (int) $p["jumlah"] ?>x)</strong>
-                    <span class="badge badge-menunggu">Kode: <?= htmlspecialchars($p["kode_pickup"]) ?></span><br>
-                    <small>
-                        Pembeli: <?= htmlspecialchars($p["nama_pembeli"]) ?>
-                        <?= $p["no_hp"] ? " · " . htmlspecialchars($p["no_hp"]) : "" ?>
-                        · Total: Rp <?= number_format($p["total_harga"], 0, ",", ".") ?>
-                    </small>
-                </div>
-                <form method="POST" class="aksi">
-                    <input type="hidden" name="kode_pickup" value="<?= htmlspecialchars($p["kode_pickup"]) ?>">
-                    <button type="submit" name="konfirmasi_pickup" class="btn-ok">Selesai</button>
-                </form>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+    <!-- Pesanan masuk -->
+    <section class="mt-blok">
+        <div class="mt-bagian">
+            <h2>Pesanan masuk</h2>
+            <?php if ($pesanan_masuk): ?><span><?= count($pesanan_masuk) ?> menunggu diambil</span><?php endif; ?>
+        </div>
 
-    <h2 class="sub-judul">Riwayat Penjualan</h2>
-    <?php if (!$riwayat_penjualan): ?>
-        <p class="auth-sub" style="text-align:left;">Belum ada riwayat penjualan selesai.</p>
-    <?php else: ?>
-        <?php foreach ($riwayat_penjualan as $r): ?>
-            <div class="card-mitra">
-                <div>
-                    <strong><?= htmlspecialchars($r["nama_makanan"]) ?> (<?= (int) $r["jumlah"] ?>x)</strong>
-                    <span class="badge badge-terverifikasi">selesai</span><br>
-                    <small>
-                        Pembeli: <?= htmlspecialchars($r["nama_pembeli"]) ?> · 
-                        Rp <?= number_format($r["total_harga"], 0, ",", ".") ?> · 
-                        <?= date("d M Y H:i", strtotime($r["created_at"])) ?>
-                    </small>
-                </div>
+        <?php if (!$pesanan_masuk): ?>
+            <p class="mt-kosong">Belum ada pesanan yang menunggu diambil.</p>
+        <?php else: ?>
+            <div class="mt-daftar">
+                <?php foreach ($pesanan_masuk as $p): ?>
+                    <article class="mt-pesanan">
+                        <div>
+                            <h3><?= htmlspecialchars($p["nama_makanan"]) ?> <small>(<?= (int) $p["jumlah"] ?>x)</small></h3>
+                            <p class="mt-info">
+                                <strong><?= htmlspecialchars($p["nama_pembeli"]) ?></strong>
+                                <?= $p["no_hp"] ? " · " . htmlspecialchars($p["no_hp"]) : "" ?><br>
+                                Total Rp <?= number_format($p["total_harga"], 0, ",", ".") ?>
+                                · Dipesan <?= date("d M, H:i", strtotime($p["created_at"])) ?>
+                            </p>
+                        </div>
+                        <div class="mt-kode-kotak">
+                            <small>Kode pickup</small>
+                            <span class="mt-kode"><?= htmlspecialchars($p["kode_pickup"]) ?></span>
+                        </div>
+                        <form method="POST" class="mt-aksi" onsubmit="return confirm('Tandai pesanan ini sudah diambil?');">
+                            <input type="hidden" name="kode_pickup" value="<?= htmlspecialchars($p["kode_pickup"]) ?>">
+                            <button type="submit" name="konfirmasi_pickup" class="mt-selesai">Selesai</button>
+                        </form>
+                    </article>
+                <?php endforeach; ?>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+        <?php endif; ?>
+    </section>
+
+    <!-- Riwayat penjualan -->
+    <section class="mt-blok">
+        <div class="mt-bagian">
+            <h2>Riwayat penjualan</h2>
+            <?php if ($riwayat_penjualan): ?><span>10 terakhir</span><?php endif; ?>
+        </div>
+
+        <?php if (!$riwayat_penjualan): ?>
+            <p class="mt-kosong">Belum ada riwayat penjualan selesai.</p>
+        <?php else: ?>
+            <div class="mt-riwayat">
+                <?php foreach ($riwayat_penjualan as $r): ?>
+                    <div class="mt-baris">
+                        <div class="mt-baris-judul">
+                            <strong><?= htmlspecialchars($r["nama_makanan"]) ?> (<?= (int) $r["jumlah"] ?>x)</strong>
+                            <span class="mt-lencana">Selesai</span>
+                        </div>
+                        <div class="mt-total">Rp <?= number_format($r["total_harga"], 0, ",", ".") ?></div>
+                        <p class="mt-info">
+                            <?= htmlspecialchars($r["nama_pembeli"]) ?>
+                            · <?= date("d M Y, H:i", strtotime($r["created_at"])) ?>
+                        </p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </section>
+
 </div>
 
 <?php require_once "../includes/footer.php"; ?>

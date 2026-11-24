@@ -41,33 +41,45 @@ $kategori = $pdo->query("SELECT * FROM categories ORDER BY nama")->fetchAll();
 
 require_once "../includes/header.php";
 ?>
+<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/admin-kelola.css">
 
-<div class="wide-wrap">
-    <h1>Kelola Kategori</h1>
-    <p class="auth-sub"><a href="index.php">← Kembali ke dashboard</a></p>
+<div class="am-halaman">
+    <a href="index.php" class="am-kembali">← Kembali ke dashboard</a>
+
+    <div class="am-kepala">
+        <h1>Kelola kategori</h1>
+        <span class="am-jumlah"><?= count($kategori) ?> kategori</span>
+    </div>
 
     <?php if ($error): ?>
-        <p class="alert"><?= htmlspecialchars($error) ?></p>
+        <p class="am-pesan" role="alert"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <form method="POST" class="aksi tambah-kategori">
+    <!-- Tambah kategori -->
+    <form method="POST" class="am-tambah">
         <input type="hidden" name="aksi" value="tambah">
-        <input type="text" name="nama" placeholder="Nama kategori baru" required>
-        <button type="submit">Tambah</button>
+        <input type="text" name="nama" class="am-input" placeholder="Nama kategori baru" aria-label="Nama kategori baru" required>
+        <button type="submit" class="am-btn am-btn--oranye">Tambah</button>
     </form>
 
+    <!-- Daftar kategori -->
+    <?php if (!$kategori): ?>
+        <p class="am-kosong">Belum ada kategori. Tambahkan yang pertama di atas.</p>
+    <?php endif; ?>
+
     <?php foreach ($kategori as $k): ?>
-        <div class="card-mitra">
-            <form method="POST" class="aksi" style="flex:1">
+        <div class="am-baris">
+            <form method="POST" class="am-ubah">
                 <input type="hidden" name="aksi" value="ubah">
-                <input type="hidden" name="id" value="<?= $k["id"] ?>">
-                <input type="text" name="nama" value="<?= htmlspecialchars($k["nama"]) ?>" required>
-                <button type="submit">Simpan</button>
+                <input type="hidden" name="id" value="<?= (int) $k["id"] ?>">
+                <input type="text" name="nama" class="am-input" value="<?= htmlspecialchars($k["nama"]) ?>"
+                       aria-label="Nama kategori" required>
+                <button type="submit" class="am-btn am-btn--hijau">Simpan</button>
             </form>
-            <form method="POST" class="aksi" onsubmit="return confirm('Hapus kategori ini?')">
+            <form method="POST" class="am-hapus" onsubmit="return confirm('Hapus kategori ini?')">
                 <input type="hidden" name="aksi" value="hapus">
-                <input type="hidden" name="id" value="<?= $k["id"] ?>">
-                <button type="submit" class="btn-no">Hapus</button>
+                <input type="hidden" name="id" value="<?= (int) $k["id"] ?>">
+                <button type="submit" class="am-btn am-btn--merah">Hapus</button>
             </form>
         </div>
     <?php endforeach; ?>

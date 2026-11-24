@@ -111,64 +111,133 @@ $tersedia = $l
     && (int) $l["stok"] > 0
     && strtotime($l["batas_jam_ambil"]) >= time();
 
+// Persentase hemat untuk lencana di foto (hanya tampilan)
+$persen_hemat = 0;
+if ($l && (int) $l["harga_asli"] > (int) $l["harga_diskon"]) {
+    $persen_hemat = (int) round((1 - $l["harga_diskon"] / $l["harga_asli"]) * 100);
+}
+
 require_once "../includes/header.php";
 ?>
+<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pesan.css">
 
-<div class="wide-wrap">
-    <h1>Pesan Makanan</h1>
-    <p class="auth-sub"><a href="/rescuebite-food-rescue/index.php#katalog">← Kembali ke katalog</a></p>
+<div class="ps-halaman">
+    <a href="/rescuebite-food-rescue/index.php#katalog" class="ps-kembali">← Kembali ke katalog</a>
+    <h1>Pesan makanan</h1>
 
     <?php if ($error): ?>
-        <p class="alert"><?= htmlspecialchars($error) ?></p>
+        <p class="ps-pesan" role="alert"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
     <?php if (!$l): ?>
-        <p class="alert">Makanan tidak ditemukan.</p>
+        <p class="ps-pesan" role="alert">Makanan tidak ditemukan.</p>
     <?php else: ?>
-        <div class="kartu-makanan" style="margin-bottom:16px;">
-            <img src="/rescuebite-food-rescue/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
-                 alt="<?= htmlspecialchars($l["nama_makanan"]) ?>">
-            <div class="isi">
-                <small style="color:var(--hijau-tua); font-weight:600;">
-                    <?= htmlspecialchars($l["nama_kategori"]) ?> · <?= htmlspecialchars($l["nama_toko"]) ?>
-                </small>
-                <h3><?= htmlspecialchars($l["nama_makanan"]) ?></h3>
-                <p><?= htmlspecialchars($l["deskripsi"] ?: "Makanan surplus layak konsumsi.") ?></p>
-                <p style="font-size:0.8rem;">
-                    Alamat: <?= htmlspecialchars($l["alamat"]) ?><br>
-                    Ambil sebelum: <strong><?= date("d M H:i", strtotime($l["batas_jam_ambil"])) ?></strong> ·
-                    Stok: <strong><?= (int) $l["stok"] ?></strong>
-                </p>
-                <span class="harga">
-                    <s><?= rupiah($l["harga_asli"]) ?></s> <?= rupiah($l["harga_diskon"]) ?> / porsi
-                </span>
-            </div>
+        <div class="ps-grid">
+
+            <!-- Kolom kiri: info makanan -->
+            <article class="ps-makanan">
+                <div class="ps-foto">
+                    <img src="/rescuebite-food-rescue/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
+                         alt="<?= htmlspecialchars($l["nama_makanan"]) ?>">
+                    <?php if ($persen_hemat > 0): ?>
+                        <span class="ps-hemat">Hemat <?= $persen_hemat ?>%</span>
+                    <?php endif; ?>
+                </div>
+                <div class="ps-isi">
+                    <p class="ps-asal"><?= htmlspecialchars($l["nama_kategori"]) ?> · <?= htmlspecialchars($l["nama_toko"]) ?></p>
+                    <h2><?= htmlspecialchars($l["nama_makanan"]) ?></h2>
+                    <p class="ps-deskripsi"><?= htmlspecialchars($l["deskripsi"] ?: "Makanan surplus layak konsumsi.") ?></p>
+
+                    <dl class="ps-detail">
+                        <div>
+                            <dt>Alamat</dt>
+                            <dd><?= htmlspecialchars($l["alamat"]) ?></dd>
+                        </div>
+                        <div>
+                            <dt>Ambil sebelum</dt>
+                            <dd><?= date("d M, H:i", strtotime($l["batas_jam_ambil"])) ?></dd>
+                        </div>
+                        <div>
+                            <dt>Stok</dt>
+                            <dd>
+                                <?= (int) $l["stok"] ?> porsi
+                                <?php if ((int) $l["stok"] > 0 && (int) $l["stok"] <= 3): ?>
+                                    <span class="ps-sisa">Hampir habis</span>
+                                <?php endif; ?>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </article>
+
+            <!-- Kolom kanan: panel pesan -->
+            <?php if ($tersedia): ?>
+                <form method="POST" class="ps-panel">
+                    <input type="hidden" name="id" value="<?= (int) $l["id"] ?>">
+
+                    <?php if ((int) $l["harga_asli"] > (int) $l["harga_diskon"]): ?>
+                        <p class="ps-harga-asli"><?= rupiah($l["harga_asli"]) ?></p>
+                    <?php endif; ?>
+                    <p class="ps-harga">
+                        <strong><?= rupiah($l["harga_diskon"]) ?></strong>
+                        <span>/ porsi</span>
+                    </p>
+
+                    <label for="jumlah">Jumlah porsi</label>
+                    <div class="ps-stepper">
+                        <button type="button" id="kurang" aria-label="Kurangi jumlah">−</button>
+                        <input type="number" id="jumlah" name="jumlah" value="1" min="1"
+                               max="<?= (int) $l["stok"] ?>" data-harga="<?= (int) $l["harga_diskon"] ?>" required>
+                        <button type="button" id="tambah" aria-label="Tambah jumlah">+</button>
+                    </div>
+                    <p class="ps-maks">Maksimal <?= (int) $l["stok"] ?> porsi</p>
+
+                    <div class="ps-total">
+                        <span>Total</span>
+                        <strong id="total"><?= rupiah($l["harga_diskon"]) ?></strong>
+                    </div>
+
+                    <button type="submit" class="ps-pesan-btn">Pesan sekarang</button>
+                    <p class="ps-langkah">Langkah berikutnya: pilih metode pembayaran, lalu tunjukkan kode pickup ke toko.</p>
+                </form>
+
+                <script>
+                (function () {
+                    var input  = document.getElementById("jumlah");
+                    var total  = document.getElementById("total");
+                    var kurang = document.getElementById("kurang");
+                    var tambah = document.getElementById("tambah");
+                    var min = parseInt(input.min, 10);
+                    var max = parseInt(input.max, 10);
+                    var harga = parseInt(input.dataset.harga, 10);
+
+                    function perbarui() {
+                        var n = parseInt(input.value, 10) || 0;
+                        total.textContent = "Rp " + (n * harga).toLocaleString("id-ID");
+                        kurang.disabled = n <= min;
+                        tambah.disabled = n >= max;
+                    }
+
+                    function atur(n) {
+                        input.value = Math.min(max, Math.max(min, n));
+                        perbarui();
+                    }
+
+                    kurang.addEventListener("click", function () { atur((parseInt(input.value, 10) || min) - 1); });
+                    tambah.addEventListener("click", function () { atur((parseInt(input.value, 10) || min) + 1); });
+                    input.addEventListener("input", perbarui);
+                    input.addEventListener("change", function () { atur(parseInt(input.value, 10) || min); });
+                    perbarui();
+                })();
+                </script>
+            <?php else: ?>
+                <div class="ps-habis">
+                    <p>Maaf, makanan ini sudah habis atau melewati batas jam ambil.</p>
+                    <a href="/rescuebite-food-rescue/index.php#katalog" class="ps-btn-hijau">Cari makanan lain</a>
+                </div>
+            <?php endif; ?>
+
         </div>
-
-        <?php if ($tersedia): ?>
-            <form method="POST">
-                <input type="hidden" name="id" value="<?= (int) $l["id"] ?>">
-
-                <label for="jumlah">Jumlah porsi</label>
-                <input type="number" id="jumlah" name="jumlah" value="1" min="1"
-                       max="<?= (int) $l["stok"] ?>" data-harga="<?= (int) $l["harga_diskon"] ?>" required>
-
-                <p style="margin:14px 0 0;">Total: <strong class="harga" id="total"><?= rupiah($l["harga_diskon"]) ?></strong></p>
-
-                <button type="submit">Pesan Sekarang</button>
-            </form>
-
-            <script>
-            const jumlah = document.getElementById("jumlah");
-            const total  = document.getElementById("total");
-            jumlah.addEventListener("input", function () {
-                const n = parseInt(jumlah.value) || 0;
-                total.textContent = "Rp " + (n * parseInt(jumlah.dataset.harga)).toLocaleString("id-ID");
-            });
-            </script>
-        <?php else: ?>
-            <p class="alert">Maaf, makanan ini sudah habis atau melewati batas jam ambil.</p>
-        <?php endif; ?>
     <?php endif; ?>
 </div>
 

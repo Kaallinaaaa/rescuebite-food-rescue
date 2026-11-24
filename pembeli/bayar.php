@@ -31,6 +31,16 @@ if (!$o || $o["status_pesanan"] !== "menunggu_pickup") {
 }
 
 $metode_tersedia = ["QRIS", "Transfer Bank", "GoPay", "OVO", "DANA"];
+
+// Keterangan singkat di tiap kartu metode (hanya tampilan)
+$ket_metode = [
+    "QRIS"          => "Scan dari aplikasi e-wallet atau m-banking apa pun",
+    "Transfer Bank" => "Transfer dari rekening bank",
+    "GoPay"         => "Dompet digital",
+    "OVO"           => "Dompet digital",
+    "DANA"          => "Dompet digital",
+];
+
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && $o["status_bayar"] !== "lunas") {
@@ -56,56 +66,83 @@ $lunas = $o["status_bayar"] === "lunas";
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pembeli.css">
+<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/bayar.css">
 
-<div class="wide-wrap">
-    <h1><?= $lunas ? "Pembayaran Berhasil" : "Pembayaran" ?></h1>
-    <p class="auth-sub"><a href="/rescuebite-food-rescue/pembeli/riwayat.php">← Pesanan saya</a></p>
+<div class="by-halaman">
+    <a href="/rescuebite-food-rescue/pembeli/riwayat.php" class="by-kembali">← Pesanan saya</a>
+    <h1><?= $lunas ? "Pembayaran berhasil" : "Pembayaran" ?></h1>
 
     <?php if ($error): ?>
-        <p class="alert"><?= htmlspecialchars($error) ?></p>
+        <p class="by-pesan" role="alert"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <div class="kartu-pesanan">
-        <div class="kp-atas">
+    <!-- Ringkasan pesanan (gaya struk) -->
+    <section class="by-struk">
+        <h2><?= htmlspecialchars($o["nama_makanan"]) ?></h2>
+        <p class="by-toko"><?= htmlspecialchars($o["nama_toko"]) ?> · <?= htmlspecialchars($o["alamat"]) ?></p>
+
+        <dl class="by-rincian">
             <div>
-                <strong><?= htmlspecialchars($o["nama_makanan"]) ?></strong><br>
-                <small><?= htmlspecialchars($o["nama_toko"]) ?> · <?= htmlspecialchars($o["alamat"]) ?></small>
+                <dt>Jumlah</dt>
+                <dd><?= (int) $o["jumlah"] ?> porsi</dd>
             </div>
-            <div class="kp-total"><?= rupiah($o["total_harga"]) ?></div>
+            <div>
+                <dt>Ambil sebelum</dt>
+                <dd><?= date("d M, H:i", strtotime($o["batas_jam_ambil"])) ?></dd>
+            </div>
+        </dl>
+
+        <div class="by-total">
+            <span>Total</span>
+            <strong><?= rupiah($o["total_harga"]) ?></strong>
         </div>
-        <div class="kp-info">
-            <span><?= (int) $o["jumlah"] ?> porsi</span>
-            <span>Ambil sebelum <strong><?= date("d M, H:i", strtotime($o["batas_jam_ambil"])) ?></strong></span>
-        </div>
-    </div>
+    </section>
 
     <?php if ($lunas): ?>
-        <div class="sukses-box">
-            <p style="margin-top:0;">Terima kasih! Pembayaran via <strong><?= htmlspecialchars($o["metode"]) ?></strong> sudah diterima.</p>
+
+        <section class="by-berhasil">
+            <span class="by-centang" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </span>
+            <p>Terima kasih! Pembayaran via <strong><?= htmlspecialchars($o["metode"]) ?></strong> sudah diterima.</p>
             <small>Tunjukkan kode ini ke toko saat mengambil pesanan</small>
-            <div class="kode"><?= htmlspecialchars($o["kode_pickup"]) ?></div>
-        </div>
-        <div class="kp-aksi">
-            <a href="/rescuebite-food-rescue/pembeli/riwayat.php" class="btn-aksi">Lihat pesanan saya</a>
-        </div>
+            <div class="by-kode"><?= htmlspecialchars($o["kode_pickup"]) ?></div>
+            <div class="by-batas">Ambil sebelum <strong><?= date("d M, H:i", strtotime($o["batas_jam_ambil"])) ?></strong></div>
+        </section>
+
+        <a href="/rescuebite-food-rescue/pembeli/riwayat.php" class="by-lihat">Lihat pesanan saya</a>
+
     <?php else: ?>
-        <form method="POST">
+
+        <form method="POST" class="by-form">
             <input type="hidden" name="order_id" value="<?= (int) $o["id"] ?>">
 
-            <label for="metode">Metode pembayaran</label>
-            <select id="metode" name="metode" required>
-                <option value="">Pilih metode</option>
-                <?php foreach ($metode_tersedia as $m): ?>
-                    <option value="<?= htmlspecialchars($m) ?>"><?= htmlspecialchars($m) ?></option>
-                <?php endforeach; ?>
-            </select>
+            <fieldset>
+                <legend>Pilih metode pembayaran</legend>
+                <div class="by-metode-daftar">
+                    <?php foreach ($metode_tersedia as $m): ?>
+                        <label class="by-metode">
+                            <input type="radio" name="metode" value="<?= htmlspecialchars($m) ?>" required>
+                            <span class="by-metode-isi">
+                                <span class="by-radio" aria-hidden="true"></span>
+                                <span class="by-metode-teks">
+                                    <b><?= htmlspecialchars($m) ?></b>
+                                    <small><?= htmlspecialchars($ket_metode[$m] ?? "") ?></small>
+                                </span>
+                            </span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </fieldset>
 
-            <p class="total-bayar">Total bayar: <strong class="harga"><?= rupiah($o["total_harga"]) ?></strong></p>
-            <p class="catatan-sim">Pembayaran ini simulasi, tidak ada uang sungguhan yang dipotong.</p>
+            <p class="by-catatan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                <span>Pembayaran ini simulasi, tidak ada uang sungguhan yang dipotong.</span>
+            </p>
 
-            <button type="submit">Bayar <?= rupiah($o["total_harga"]) ?></button>
+            <button type="submit" class="by-bayar">Bayar <?= rupiah($o["total_harga"]) ?></button>
         </form>
+
     <?php endif; ?>
 </div>
 

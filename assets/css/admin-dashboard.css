@@ -1,0 +1,190 @@
+
+.ad-halaman {
+    --ad-hijau: #1f5c47;
+    --ad-hijau-tua: #153f31;
+    --ad-hijau-muda: #dff1e4;
+    --ad-oranye: #ee8a1f;
+    --ad-oranye-tua: #c96f0f;
+    --ad-oranye-muda: #fde6c8;
+    --ad-teks: #33423a;
+    --ad-redup: #6f7b74;
+    --ad-garis: #eadfcb;
+
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px 72px;
+    color: var(--ad-teks);
+}
+
+.ad-halaman :focus-visible {
+    outline: 3px solid var(--ad-oranye);
+    outline-offset: 3px;
+}
+
+/* ---------- Kepala ---------- */
+.ad-kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px 20px;
+    margin-bottom: 28px;
+}
+
+.ad-kepala h1 {
+    margin: 0 0 4px;
+    font-size: clamp(2rem, 5vw, 2.6rem);
+    line-height: 1.1;
+    color: var(--ad-hijau);
+    text-align: left;
+}
+
+.ad-sapa {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--ad-redup);
+}
+
+.ad-sapa strong {
+    color: var(--ad-teks);
+}
+
+.ad-total {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--ad-hijau-muda);
+    color: var(--ad-hijau-tua);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+/* ---------- Kartu menu ---------- */
+.ad-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.ad-kartu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 26px 28px;
+    border-radius: 24px;
+    background: #fff;
+    border: 2px solid var(--ad-garis);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.ad-kartu:hover {
+    border-color: var(--ad-hijau);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(31, 92, 71, 0.12);
+}
+
+.ad-angka {
+    display: block;
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ad-hijau);
+}
+
+.ad-satuan {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.95rem;
+    color: var(--ad-redup);
+}
+
+.ad-bawah {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 2px dashed #dccdb0;
+}
+
+.ad-bawah h2 {
+    margin: 0 0 2px;
+    font-size: 1.15rem;
+    color: var(--ad-hijau-tua);
+}
+
+.ad-bawah p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: var(--ad-redup);
+}
+
+.ad-panah {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ad-hijau-muda);
+    color: var(--ad-hijau);
+    transition: background 0.2s, color 0.2s;
+}
+
+.ad-kartu:hover .ad-panah {
+    background: var(--ad-hijau);
+    color: #fff;
+}
+
+/* kartu yang butuh tindakan = satu-satunya yang menyala */
+.ad-kartu--sorot {
+    background: var(--ad-oranye-muda);
+    border-color: #f5cf9b;
+}
+
+.ad-kartu--sorot:hover {
+    border-color: var(--ad-oranye);
+}
+
+.ad-kartu--sorot .ad-angka {
+    color: var(--ad-oranye-tua);
+}
+
+.ad-kartu--sorot .ad-bawah {
+    border-top-color: #e8bd85;
+}
+
+.ad-kartu--sorot .ad-panah {
+    background: var(--ad-oranye);
+    color: #fff;
+}
+
+.ad-kartu--sorot:hover .ad-panah {
+    background: var(--ad-oranye-tua);
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 640px) {
+    .ad-halaman {
+        padding: 28px 14px 56px;
+    }
+
+    .ad-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-kartu {
+        padding: 22px;
+    }
+
+    .ad-angka {
+        font-size: 2.6rem;
+    }
+}

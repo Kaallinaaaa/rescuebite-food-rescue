@@ -79,60 +79,122 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
+// Huruf awal untuk avatar (hanya tampilan)
+$inisial = mb_strtoupper(mb_substr(trim($user["nama"]), 0, 1)) ?: "?";
+
 require_once "includes/header.php";
 ?>
+<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/profil.css">
 
-<div class="auth-wrap">
-    <h1>Profil Saya</h1>
-    <p class="auth-sub"><?= htmlspecialchars($user["email"]) ?> · <?= htmlspecialchars($role) ?></p>
+<div class="pf-halaman">
+
+    <!-- Kepala profil -->
+    <section class="pf-kepala">
+        <div class="pf-avatar" aria-hidden="true"><?= htmlspecialchars($inisial) ?></div>
+        <div class="pf-kepala-teks">
+            <h1><?= htmlspecialchars($user["nama"]) ?></h1>
+            <p class="pf-email"><?= htmlspecialchars($user["email"]) ?></p>
+            <div class="pf-label-baris">
+                <span class="pf-label"><?= htmlspecialchars($role) ?></span>
+                <?php if ($role === "mitra" && $toko): ?>
+                    <span class="pf-label pf-label--<?= htmlspecialchars($toko["status_verifikasi"]) ?>">
+                        <?= htmlspecialchars($toko["status_verifikasi"]) ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
 
     <?php if ($error): ?>
-        <p class="alert"><?= htmlspecialchars($error) ?></p>
+        <p class="pf-pesan pf-pesan--salah" role="alert"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
     <?php if ($sukses): ?>
-        <p class="alert-ok"><?= htmlspecialchars($sukses) ?></p>
+        <p class="pf-pesan pf-pesan--ok" role="status"><?= htmlspecialchars($sukses) ?></p>
     <?php endif; ?>
 
-    <form method="POST">
-        <input type="hidden" name="aksi" value="profil">
+    <div class="pf-grid">
 
-        <label for="nama">Nama lengkap</label>
-        <input type="text" id="nama" name="nama" value="<?= htmlspecialchars($user["nama"]) ?>" required>
+        <!-- Data diri -->
+        <section class="pf-kartu">
+            <h2>Data diri</h2>
+            <p class="pf-ket">Perbarui nama dan nomor HP yang dipakai untuk pesanan.</p>
 
-        <label for="no_hp">No. HP</label>
-        <input type="tel" id="no_hp" name="no_hp" value="<?= htmlspecialchars($user["no_hp"] ?? "") ?>">
+            <form method="POST">
+                <input type="hidden" name="aksi" value="profil">
 
-        <?php if ($role === "mitra" && $toko): ?>
-            <label for="nama_toko">Nama toko</label>
-            <input type="text" id="nama_toko" name="nama_toko" value="<?= htmlspecialchars($toko["nama_toko"]) ?>" required>
+                <div class="pf-field">
+                    <label for="nama">Nama lengkap</label>
+                    <input type="text" id="nama" name="nama" value="<?= htmlspecialchars($user["nama"]) ?>" required>
+                </div>
 
-            <label for="alamat">Alamat toko</label>
-            <input type="text" id="alamat" name="alamat" value="<?= htmlspecialchars($toko["alamat"]) ?>" required>
+                <div class="pf-field">
+                    <label for="no_hp">No. HP</label>
+                    <input type="tel" id="no_hp" name="no_hp" inputmode="tel" value="<?= htmlspecialchars($user["no_hp"] ?? "") ?>">
+                    <span class="pf-bantu">8–15 angka, boleh diawali +. Contoh: 081234567890</span>
+                </div>
 
-            <label for="jam_tutup">Jam tutup</label>
-            <input type="time" id="jam_tutup" name="jam_tutup" value="<?= htmlspecialchars($toko["jam_tutup"] ?? "") ?>">
+                <?php if ($role === "mitra" && $toko): ?>
+                    <div class="pf-toko">
+                        <h3>Data toko</h3>
 
-            <p class="auth-sub" style="margin-top:12px">
-                Status verifikasi:
-                <span class="badge badge-<?= $toko["status_verifikasi"] ?>"><?= $toko["status_verifikasi"] ?></span>
-            </p>
-        <?php endif; ?>
+                        <div class="pf-field">
+                            <label for="nama_toko">Nama toko</label>
+                            <input type="text" id="nama_toko" name="nama_toko" value="<?= htmlspecialchars($toko["nama_toko"]) ?>" required>
+                        </div>
 
-        <button type="submit">Simpan Profil</button>
-    </form>
+                        <div class="pf-field">
+                            <label for="alamat">Alamat toko</label>
+                            <input type="text" id="alamat" name="alamat" value="<?= htmlspecialchars($toko["alamat"]) ?>" required>
+                        </div>
 
-    <h2 class="sub-judul">Ganti Password</h2>
-    <form method="POST">
-        <input type="hidden" name="aksi" value="password">
+                        <div class="pf-field">
+                            <label for="jam_tutup">Jam tutup</label>
+                            <input type="time" id="jam_tutup" name="jam_tutup" value="<?= htmlspecialchars($toko["jam_tutup"] ?? "") ?>">
+                        </div>
+                    </div>
+                <?php endif; ?>
 
-        <label for="password_lama">Password lama</label>
-        <input type="password" id="password_lama" name="password_lama" required>
+                <button type="submit" class="pf-btn pf-btn--hijau">Simpan profil</button>
+            </form>
+        </section>
 
-        <label for="password_baru">Password baru</label>
-        <input type="password" id="password_baru" name="password_baru" placeholder="Minimal 6 karakter" required>
+        <!-- Ganti password -->
+        <section class="pf-kartu">
+            <h2>Ganti password</h2>
+            <p class="pf-ket">Gunakan password baru minimal 6 karakter.</p>
 
-        <button type="submit">Ganti Password</button>
-    </form>
+            <form method="POST">
+                <input type="hidden" name="aksi" value="password">
+
+                <div class="pf-field pf-sandi">
+                    <label for="password_lama">Password lama</label>
+                    <input type="password" id="password_lama" name="password_lama" autocomplete="current-password" required>
+                    <button type="button" class="pf-lihat" data-target="password_lama" aria-label="Tampilkan password lama">Lihat</button>
+                </div>
+
+                <div class="pf-field pf-sandi">
+                    <label for="password_baru">Password baru</label>
+                    <input type="password" id="password_baru" name="password_baru" placeholder="Minimal 6 karakter" autocomplete="new-password" required>
+                    <button type="button" class="pf-lihat" data-target="password_baru" aria-label="Tampilkan password baru">Lihat</button>
+                </div>
+
+                <button type="submit" class="pf-btn pf-btn--oranye">Ganti password</button>
+            </form>
+        </section>
+
+    </div>
 </div>
+
+<script>
+// Tombol Lihat / Sembunyikan password
+document.querySelectorAll(".pf-lihat").forEach(function (tombol) {
+    tombol.addEventListener("click", function () {
+        var input = document.getElementById(tombol.dataset.target);
+        var tampil = input.type === "password";
+        input.type = tampil ? "text" : "password";
+        tombol.textContent = tampil ? "Sembunyi" : "Lihat";
+    });
+});
+</script>
 
 <?php require_once "includes/footer.php"; ?>
