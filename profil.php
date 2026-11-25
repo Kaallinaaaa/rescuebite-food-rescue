@@ -84,7 +84,7 @@ $inisial = mb_strtoupper(mb_substr(trim($user["nama"]), 0, 1)) ?: "?";
 
 require_once "includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/profil.css">
+<link rel="stylesheet" href="/assets/css/profil.css">
 
 <div class="pf-halaman">
 

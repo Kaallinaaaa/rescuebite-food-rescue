@@ -39,7 +39,7 @@ $jml_lainnya = count($listing) - $jml_diblokir;
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/admin-kelola.css">
+<link rel="stylesheet" href="/assets/css/admin-kelola.css">
 
 <div class="am-halaman">
     <a href="index.php" class="am-kembali">← Kembali ke dashboard</a>
@@ -69,7 +69,7 @@ require_once "../includes/header.php";
                          data-status="<?= $diblokir ? 'diblokir' : 'normal' ?>">
 
                     <img class="am-foto"
-                         src="/rescuebite-food-rescue/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
+                         src="/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
                          alt="<?= htmlspecialchars($l["nama_makanan"]) ?>">
 
                     <div class="am-listing-isi">

@@ -42,8 +42,8 @@ foreach ($pesanan as $o) {
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pembeli.css">
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/riwayat.css">
+<link rel="stylesheet" href="/assets/css/pembeli.css">
+<link rel="stylesheet" href="/assets/css/riwayat.css">
 
 <div class="rw-halaman">
 
@@ -52,13 +52,13 @@ require_once "../includes/header.php";
             <h1>Pesanan Saya</h1>
             <p>Tunjukkan kode pickup ke toko sebelum batas jam ambil.</p>
         </div>
-        <a href="/rescuebite-food-rescue/pembeli/dampak.php" class="rw-dampak">Lihat dampakmu</a>
+        <a href="/pembeli/dampak.php" class="rw-dampak">Lihat dampakmu</a>
     </div>
 
     <?php if (!$pesanan): ?>
         <div class="rw-kosong">
             <p>Kamu belum punya pesanan.</p>
-            <a href="/rescuebite-food-rescue/index.php#katalog" class="rw-btn rw-btn--oranye">Cari makanan</a>
+            <a href="/index.php#katalog" class="rw-btn rw-btn--oranye">Cari makanan</a>
         </div>
     <?php else: ?>
 
@@ -132,11 +132,11 @@ require_once "../includes/header.php";
                         <?php if (($aktif && !$lunas) || $o["status_pesanan"] === "selesai"): ?>
                             <div class="rw-aksi">
                                 <?php if ($aktif && !$lunas): ?>
-                                    <a href="/rescuebite-food-rescue/pembeli/bayar.php?order_id=<?= (int) $o["id"] ?>" class="rw-btn rw-btn--oranye">Bayar sekarang</a>
+                                    <a href="/pembeli/bayar.php?order_id=<?= (int) $o["id"] ?>" class="rw-btn rw-btn--oranye">Bayar sekarang</a>
                                 <?php endif; ?>
 
                                 <?php if ($o["status_pesanan"] === "selesai" && !$o["review_id"]): ?>
-                                    <a href="/rescuebite-food-rescue/pembeli/review.php?order_id=<?= (int) $o["id"] ?>" class="rw-btn rw-btn--hijau">Beri ulasan</a>
+                                    <a href="/pembeli/review.php?order_id=<?= (int) $o["id"] ?>" class="rw-btn rw-btn--hijau">Beri ulasan</a>
                                 <?php elseif ($o["review_id"]): ?>
                                     <span class="rw-sudah">Sudah diulas ✓</span>
                                 <?php endif; ?>

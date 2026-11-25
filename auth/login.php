@@ -35,7 +35,7 @@ require_once "../includes/header.php";
 ?>
 
 <div class="auth-wrap">
-    <img src="/rescuebite-food-rescue/assets/img/logo-putih.png" alt="Rescuebite" class="auth-logo">
+    <img src="/assets/img/logo-putih.png" alt="Rescuebite" class="auth-logo">
     <h1>Selamat Datang</h1>
     <p class="auth-sub">Masuk untuk mulai menyelamatkan makanan dan hemat uang makan.</p>
 

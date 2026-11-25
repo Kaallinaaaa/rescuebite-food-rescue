@@ -26,7 +26,7 @@ $order_id = (int) ($_GET["order_id"] ?? $_POST["order_id"] ?? 0);
 $o = ambil_order($pdo, $order_id, $_SESSION["user_id"]);
 
 if (!$o || $o["status_pesanan"] !== "menunggu_pickup") {
-    header("Location: /rescuebite-food-rescue/pembeli/riwayat.php");
+    header("Location: /pembeli/riwayat.php");
     exit;
 }
 
@@ -66,10 +66,10 @@ $lunas = $o["status_bayar"] === "lunas";
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/bayar.css">
+<link rel="stylesheet" href="/assets/css/bayar.css">
 
 <div class="by-halaman">
-    <a href="/rescuebite-food-rescue/pembeli/riwayat.php" class="by-kembali">← Pesanan saya</a>
+    <a href="/pembeli/riwayat.php" class="by-kembali">← Pesanan saya</a>
     <h1><?= $lunas ? "Pembayaran berhasil" : "Pembayaran" ?></h1>
 
     <?php if ($error): ?>
@@ -110,7 +110,7 @@ require_once "../includes/header.php";
             <div class="by-batas">Ambil sebelum <strong><?= date("d M, H:i", strtotime($o["batas_jam_ambil"])) ?></strong></div>
         </section>
 
-        <a href="/rescuebite-food-rescue/pembeli/riwayat.php" class="by-lihat">Lihat pesanan saya</a>
+        <a href="/pembeli/riwayat.php" class="by-lihat">Lihat pesanan saya</a>
 
     <?php else: ?>
 

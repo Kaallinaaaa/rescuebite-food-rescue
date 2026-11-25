@@ -26,7 +26,7 @@ function buat_kode($pdo) {
 
 $listing_id = (int) ($_GET["id"] ?? $_POST["id"] ?? 0);
 if ($listing_id <= 0) {
-    header("Location: /rescuebite-food-rescue/index.php");
+    header("Location: /index.php");
     exit;
 }
 
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $pdo->commit();
 
-            header("Location: /rescuebite-food-rescue/pembeli/bayar.php?order_id=" . $order_id);
+            header("Location: /pembeli/bayar.php?order_id=" . $order_id);
             exit;
         } catch (RuntimeException $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();
@@ -119,10 +119,10 @@ if ($l && (int) $l["harga_asli"] > (int) $l["harga_diskon"]) {
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pesan.css">
+<link rel="stylesheet" href="/assets/css/pesan.css">
 
 <div class="ps-halaman">
-    <a href="/rescuebite-food-rescue/index.php#katalog" class="ps-kembali">← Kembali ke katalog</a>
+    <a href="/index.php#katalog" class="ps-kembali">← Kembali ke katalog</a>
     <h1>Pesan makanan</h1>
 
     <?php if ($error): ?>
@@ -137,7 +137,7 @@ require_once "../includes/header.php";
             <!-- Kolom kiri: info makanan -->
             <article class="ps-makanan">
                 <div class="ps-foto">
-                    <img src="/rescuebite-food-rescue/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
+                    <img src="/assets/uploads/<?= htmlspecialchars($l["foto"]) ?>"
                          alt="<?= htmlspecialchars($l["nama_makanan"]) ?>">
                     <?php if ($persen_hemat > 0): ?>
                         <span class="ps-hemat">Hemat <?= $persen_hemat ?>%</span>
@@ -233,7 +233,7 @@ require_once "../includes/header.php";
             <?php else: ?>
                 <div class="ps-habis">
                     <p>Maaf, makanan ini sudah habis atau melewati batas jam ambil.</p>
-                    <a href="/rescuebite-food-rescue/index.php#katalog" class="ps-btn-hijau">Cari makanan lain</a>
+                    <a href="/index.php#katalog" class="ps-btn-hijau">Cari makanan lain</a>
                 </div>
             <?php endif; ?>
 

@@ -26,13 +26,13 @@ $semua = $pdo->query($sql)->fetch();
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pembeli.css">
+<link rel="stylesheet" href="/assets/css/pembeli.css">
 
 <div class="wide-wrap">
     <h1>Dampakmu</h1>
     <p class="auth-sub">
         Setiap pesanan yang kamu ambil berarti makanan layak yang tidak berakhir di tempat sampah.
-        <a href="/rescuebite-food-rescue/pembeli/riwayat.php">← Pesanan saya</a>
+        <a href="/pembeli/riwayat.php">← Pesanan saya</a>
     </p>
 
     <div class="dampak-grid">
@@ -53,7 +53,7 @@ require_once "../includes/header.php";
     <?php if ((int) $saya["jml_pesanan"] === 0): ?>
         <div class="kosong">
             <p>Belum ada pesanan yang selesai. Dampakmu muncul setelah kamu mengambil pesanan pertama.</p>
-            <a href="/rescuebite-food-rescue/index.php#katalog" class="btn-aksi">Cari makanan</a>
+            <a href="/index.php#katalog" class="btn-aksi">Cari makanan</a>
         </div>
     <?php endif; ?>
 

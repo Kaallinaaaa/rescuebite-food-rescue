@@ -33,7 +33,7 @@ foreach ($mitra as $m) {
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/admin-kelola.css">
+<link rel="stylesheet" href="/assets/css/admin-kelola.css">
 
 <div class="am-halaman">
     <a href="index.php" class="am-kembali">← Kembali ke dashboard</a>

@@ -89,7 +89,7 @@ $terverifikasi = $mitra["status_verifikasi"] === "terverifikasi";
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/mitra-dashboard.css">
+<link rel="stylesheet" href="/assets/css/mitra-dashboard.css">
 
 <div class="mt-halaman">
 

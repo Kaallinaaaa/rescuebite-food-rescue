@@ -18,7 +18,7 @@ $stmt->execute([$order_id, $_SESSION["user_id"]]);
 $order = $stmt->fetch();
 
 if (!$order || $order["sudah_review"] > 0) {
-    header("Location: /rescuebite-food-rescue/pembeli/riwayat.php");
+    header("Location: /pembeli/riwayat.php");
     exit;
 }
 
@@ -47,14 +47,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } catch (PDOException $e) {
             // order_id bersifat UNIQUE: kalau sudah pernah diulas, abaikan saja
         }
-        header("Location: /rescuebite-food-rescue/pembeli/riwayat.php");
+        header("Location: /pembeli/riwayat.php");
         exit;
     }
 }
 
 require_once "../includes/header.php";
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/pembeli.css">
+<link rel="stylesheet" href="/assets/css/pembeli.css">
 
 <div class="wide-wrap">
     <h1>Beri Ulasan</h1>
@@ -82,7 +82,7 @@ require_once "../includes/header.php";
                   placeholder="Ceritakan pengalamanmu..."></textarea>
 
         <button type="submit">Kirim Ulasan</button>
-        <p class="auth-foot" style="text-align:center;"><a href="/rescuebite-food-rescue/pembeli/riwayat.php">Batal</a></p>
+        <p class="auth-foot" style="text-align:center;"><a href="/pembeli/riwayat.php">Batal</a></p>
     </form>
 </div>
 

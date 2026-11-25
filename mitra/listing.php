@@ -223,7 +223,7 @@ require_once "../includes/header.php";
         ?>
             <div class="card-mitra">
                 <div style="display:flex; gap:12px; align-items:center;">
-                    <img src="/rescuebite-food-rescue/assets/uploads/<?= htmlspecialchars($item["foto"]) ?>" 
+                    <img src="/assets/uploads/<?= htmlspecialchars($item["foto"]) ?>" 
                             alt="<?= htmlspecialchars($item["nama_makanan"]) ?>" 
                             style="width:68px; height:68px; object-fit:cover; border-radius:12px;">
                     <div>

@@ -14,7 +14,7 @@ $total_mitra   = $pdo->query("SELECT COUNT(*) FROM partners")->fetchColumn();
 $total_kategori = $pdo->query("SELECT COUNT(*) FROM categories")->fetchColumn();
 $total_listing  = $pdo->query("SELECT COUNT(*) FROM listings")->fetchColumn();
 ?>
-<link rel="stylesheet" href="/rescuebite-food-rescue/assets/css/admin-dashboard.css">
+<link rel="stylesheet" href="/assets/css/admin-dashboard.css">
 
 <div class="ad-halaman">
 

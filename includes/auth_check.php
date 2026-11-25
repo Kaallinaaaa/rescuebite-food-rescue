@@ -1,7 +1,7 @@
 <?php
 function require_login() {
     if (!isset($_SESSION["user_id"])) {
-        header("Location: /rescuebite-food-rescue/auth/login.php");
+        header("Location: /auth/login.php");
         exit;
     }
 }
